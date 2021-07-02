@@ -36,7 +36,7 @@
         "https://images.cnblogs.com/cnblogs_com/zc-lee/1901644/o_201216114949859ea13533fa828b32c579a2fe1f4134960a5a29.jpg"
     ], loadingImg = 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fhbimg.b0.upaiyun.com%2F079631e90e8871989842d35305b636f46761d4a5fe5-YizIOH_fw658&refer=http%3A%2F%2Fhbimg.b0.upaiyun.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1627726169&t=6de518bc2437fb39d6d30d7b4cfb1682';
     // document.body.innerHTML = imgs.map(v => `<img onload="imgLoad(this)" data-src="${v}" src="${loadingImg}" />`).join('');  //  将新创建的元素及其内容添加到DOM中
-    document.body.innerHTML = imgs.map(v => `<img data-src="${v}" src="${loadingImg}" />`).join('');  //  将新创建的元素及其内容添加到DOM中
+    document.body.innerHTML = imgs.map(v => `<img data-src="${v}" src="${loadingImg}" referrer="no-referrer|origin|unsafe-url" />`).join('');  //  将新创建的元素及其内容添加到DOM中
 
     function lazyLoad(delay = 500) {
         let imgLoad = (img, i) => {
