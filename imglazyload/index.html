@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>图片懒加载 - 不限高度</title>
+    <style>
+        img {
+            display: block;
+            width: 600px;
+        }
+    </style>
+</head>
+
+<body>
+
+</body>
+<script>
+    let imgs = [
+        "https://images.cnblogs.com/cnblogs_com/zc-lee/1901540/o_201216091158wugengji%20(1).jpg",
+        "https://images.cnblogs.com/cnblogs_com/zc-lee/1901644/o_2012161143007aec54e736d12f2e07615a764cc2d56285356844.jpg",
+        "https://images.cnblogs.com/cnblogs_com/zc-lee/1901644/o_201216114728013deab63aa80376386b4f983a184f6d.jpg",
+        "https://images.cnblogs.com/cnblogs_com/zc-lee/1901644/o_2012161146434e4a20a4462309f774fbcd07710e0cf3d7cad60b.jpg",
+        "https://images.cnblogs.com/cnblogs_com/zc-lee/1901644/o_201216114719be34b4c27d1ed21b5e262e84ab6eddc450da3f07.jpg",
+        "https://images.cnblogs.com/cnblogs_com/zc-lee/1901540/o_201216091241wugengji%20(2).jpg",
+        "https://images.cnblogs.com/cnblogs_com/zc-lee/1901644/o_2012161147562c6e26d3d539b60082cb6c6aec50352ac75cb702.jpg",
+        "https://images.cnblogs.com/cnblogs_com/zc-lee/1901540/o_201216091213wugengji%20(3).jpg",
+        "https://images.cnblogs.com/cnblogs_com/zc-lee/1901644/o_2012161146434e4a20a4462309f774fbcd07710e0cf3d7cad60b.jpg",
+        "https://images.cnblogs.com/cnblogs_com/zc-lee/1901540/o_201216091229wugengji%20(4).jpg",
+        "https://images.cnblogs.com/cnblogs_com/zc-lee/1901644/o_201216114629039598aa570dca3b.jpg",
+        "https://images.cnblogs.com/cnblogs_com/zc-lee/1901644/o_2012161148532dcca28f8c5494ee50cec76029f5e0fe98257eea.jpg",
+        "https://images.cnblogs.com/cnblogs_com/zc-lee/1901644/o_2012161149075469531d74d1b.jpg",
+        "https://images.cnblogs.com/cnblogs_com/zc-lee/1901644/o_201216114949859ea13533fa828b32c579a2fe1f4134960a5a29.jpg"
+    ], loadingImg = 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fhbimg.b0.upaiyun.com%2F079631e90e8871989842d35305b636f46761d4a5fe5-YizIOH_fw658&refer=http%3A%2F%2Fhbimg.b0.upaiyun.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1627726169&t=6de518bc2437fb39d6d30d7b4cfb1682';
+    // document.body.innerHTML = imgs.map(v => `<img onload="imgLoad(this)" data-src="${v}" src="${loadingImg}" />`).join('');  //  将新创建的元素及其内容添加到DOM中
+    document.body.innerHTML = imgs.map(v => `<img data-src="${v}" src="${loadingImg}" />`).join('');  //  将新创建的元素及其内容添加到DOM中
+
+    function lazyLoad(delay = 500) {
+        let imgLoad = (img, i) => {
+            // console.log('\nimgLoad\nheight:', img.height, '\nindex:', i, '\ndata-src === src:', img.getAttribute('data-src') === img.currentSrc, '\narguments:', arguments)
+            init()
+            img.onload = null
+        },
+            imgDoms = document.querySelectorAll('img'),
+            /**
+            todo：
+                当前图片初始化是从第一个开始，若滚动后刷新，任然是从第一个开始，不是从可视区域的第一个开始显示。
+                考虑缓存和仅优化首次加载并不需要完善。
+                完善思路，判断不仅判断offsetTop,同时判断bottom
+            */
+            init = () => {
+                let H = document.documentElement.clientHeight,//获取可视区域高度
+                    S = document.documentElement.scrollTop || document.body.scrollTop;
+                for (var i = 0, v = imgDoms[i]; i < imgDoms.length; i++ , v = imgDoms[i]) {
+                    let dataSrc = v.getAttribute('data-src'),
+                        isloaded = v.getAttribute('data-loaded') // delay 导致 dataSrc !== v.currentSrc 判断加载状态延迟，滚动重复触发，isloaded提前标记状态
+                    if (!isloaded && H + S > v.offsetTop) {
+                        // 未加载且在显示区范围初始化 
+                        v.setAttribute('data-loaded', true)
+                        setTimeout(() => {
+                            // console.log('\nindex:', i, '\nheight:', v.height, '\nisloaded:', isloaded, '\ndata-src=currentSrc:', v.getAttribute('data-src') === v.currentSrc, '\nclientHeight:', H, '\nscrollTop:', S, '\noffsetTop:', v.offsetTop)
+                            v.src = dataSrc
+                            v.onload = imgLoad.bind(null, v, i) // 下一个初始化，init放在img onload保证图片显示后高度已经变化，下一项offsetTop准确
+                            // if (i === 0) // 测试imgLoad 是否清除
+                            //     setTimeout(() => {
+                            //         v.src = loadingImg
+                            //     }, 1000)
+                        }, delay)
+                        break;
+                    } else if (!isloaded) {
+                        // 未加载不在显示区范围，退出初始话，开始监听滚动
+                        scrollLoad()
+                        break;
+                    }
+                }
+            },
+            scrollLoad = () => {
+                window.onload = window.onscroll = function () { //onscroll()在滚动条滚动的时候触发
+                    loadone();
+                }
+            },
+            loadone = (isInit = false) => {
+                var H = document.documentElement.clientHeight;//获取可视区域高度
+                var S = document.documentElement.scrollTop || document.body.scrollTop;
+                for (var i = 0, v = imgDoms[i]; i < imgDoms.length; i++ , v = imgDoms[i]) {
+                    let dataSrc = v.getAttribute('data-src'),
+                        isloaded = v.getAttribute('data-loaded') // delay 导致 dataSrc !== v.currentSrc 判断加载状态延迟，滚动重复触发，isloaded提前标记状态
+                    if (!isloaded && H + S > v.offsetTop) {
+                        v.setAttribute('data-loaded', true)
+                        setTimeout(() => {
+                            v.src = dataSrc
+                        }, delay)
+                        break;
+                    }
+                }
+            }
+        init()
+    }
+
+    lazyLoad()
+    
+</script>
+
+</html>

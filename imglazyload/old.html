@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>图片懒加载 - 已知高度</title>
+    <style>
+        img {
+            display: block;
+            width: 500px;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <img data-src="https://images.cnblogs.com/cnblogs_com/zc-lee/1901540/o_201216091158wugengji%20(1).jpg" alt="">
+    <img data-src="https://images.cnblogs.com/cnblogs_com/zc-lee/1901644/o_2012161143007aec54e736d12f2e07615a764cc2d56285356844.jpg"
+        alt="">
+    <img data-src="https://images.cnblogs.com/cnblogs_com/zc-lee/1901644/o_201216114728013deab63aa80376386b4f983a184f6d.jpg"
+        alt="">
+    <img data-src="https://images.cnblogs.com/cnblogs_com/zc-lee/1901644/o_2012161146434e4a20a4462309f774fbcd07710e0cf3d7cad60b.jpg"
+        alt="">
+    <img data-src="https://images.cnblogs.com/cnblogs_com/zc-lee/1901644/o_201216114719be34b4c27d1ed21b5e262e84ab6eddc450da3f07.jpg"
+        alt="">
+    <img data-src="https://images.cnblogs.com/cnblogs_com/zc-lee/1901540/o_201216091241wugengji%20(2).jpg" alt="">
+    <img data-src="https://images.cnblogs.com/cnblogs_com/zc-lee/1901644/o_2012161147562c6e26d3d539b60082cb6c6aec50352ac75cb702.jpg"
+        alt="">
+    <img data-src="https://images.cnblogs.com/cnblogs_com/zc-lee/1901540/o_201216091213wugengji%20(3).jpg" alt="">
+    <img data-src="https://images.cnblogs.com/cnblogs_com/zc-lee/1901644/o_2012161146434e4a20a4462309f774fbcd07710e0cf3d7cad60b.jpg"
+        alt="">
+    <img data-src="https://images.cnblogs.com/cnblogs_com/zc-lee/1901540/o_201216091229wugengji%20(4).jpg" alt="">
+    <img data-src="https://images.cnblogs.com/cnblogs_com/zc-lee/1901644/o_201216114629039598aa570dca3b.jpg" alt="">
+    <img data-src="https://images.cnblogs.com/cnblogs_com/zc-lee/1901644/o_2012161148532dcca28f8c5494ee50cec76029f5e0fe98257eea.jpg"
+        alt="">
+    <img data-src="https://images.cnblogs.com/cnblogs_com/zc-lee/1901644/o_2012161149075469531d74d1b.jpg" alt="">
+    <img data-src="https://images.cnblogs.com/cnblogs_com/zc-lee/1901644/o_201216114949859ea13533fa828b32c579a2fe1f4134960a5a29.jpg"
+        alt="">
+</body>
+<script>
+    // 仅适用于已知img height 不设高度会导致懒加载无效
+    var imgs = document.querySelectorAll('img');
+
+    //offsetTop是元素与offsetParent的距离，循环获取直到页面顶部
+    function getTop(e) { // ???
+        var T = e.offsetTop;
+        while (e = e.offsetParent) {
+            T += e.offsetTop;
+        }
+        return T;
+    }
+
+    function lazyLoad(imgs) {
+        var H = document.documentElement.clientHeight;//获取可视区域高度
+        var S = document.documentElement.scrollTop || document.body.scrollTop;
+        for (var i = 0; i < imgs.length; i++) {
+            // if (H + S > getTop(imgs[i])) {
+            if (H + S > imgs[i].offsetTop) {
+                imgs[i].src = imgs[i].getAttribute('data-src');
+            }
+        }
+    }
+
+    window.onload = window.onscroll = function () { //onscroll()在滚动条滚动的时候触发
+        lazyLoad(imgs);
+    }
+</script>
+
+</html>
