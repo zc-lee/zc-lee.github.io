@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name='referrer' content='no-referrer'>
+    <title>Document</title>
+</head>
+
+<body>
+    <a href="https://github.com/MrRio/jsPDF">https://github.com/MrRio/jsPDF</a>
+    <button onclick="downloadPdf()">download</button>
+    <img id="scream" src="https://images.cnblogs.com/cnblogs_com/zc-lee/1901644/o_2012161143007aec54e736d12f2e07615a764cc2d56285356844.jpg"  referrer="no-referrer|origin|unsafe-url" style="display: none;" />
+    <script src="./lib/jsPDF.min.js"></script>
+    <script>
+        function downloadPdf() {
+            console.log(jspdf)
+            var doc = new jspdf.jsPDF();
+            doc.text(20, 10, 'Hello world.');
+
+            doc.text(20, 20, 'This is the default font.');
+
+            // doc.setFont("courier");
+            // doc.setFontType("normal");
+            // doc.text(20, 30, 'This is courier normal.');
+
+            // doc.setFont("times");
+            // doc.setFontType("italic");
+            // doc.text(20, 40, 'This is times italic.');
+
+            // doc.setFont("helvetica");
+            // doc.setFontType("bold");
+            // doc.text(20, 50, 'This is helvetica bold.');
+
+            // doc.setFont("courier");
+            // doc.setFontType("bolditalic");
+            // doc.text(20, 60, 'This is courier bolditalic.');
+
+            var imgData = document.getElementById("scream");
+            // var imgData = require('./img/code.png');
+            
+            // doc.setFontSize(40);
+            // doc.text(35, 65, "Octonyan loves jsPDF");
+            // doc.addImage(imgData, 'JPEG', 15, 90, 180, 180);
+
+            doc.save('Test.pdf');
+        }
+    </script>
+</body>
+
+</html>

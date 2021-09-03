@@ -7,7 +7,7 @@
     <meta name='referrer' content='no-referrer'>
     <title>黑白图片</title>
     <style>
-        img {
+        img:not(#icon) {
             display: block;
             width: 500px;
             height: 300px;
@@ -16,14 +16,88 @@
             opacity: 0.66;
         }
 
-        img:hover {
+        #icon {
+            position: fixed;
+            right: 20px;
+            bottom: 200px;
+            width: 100px;
+            height: 100px;
+            animation: mymove 5s infinite alternate;
+            background-image: url('https://images.cnblogs.com/cnblogs_com/zc-lee/2003095/o_210721071151%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20210621132229.jpg');
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+        }
+
+        #icon:hover {
+            animation: rubberBand 1s;
+        }
+
+        img:not(#icon):hover {
             filter: none;
             opacity: 1;
+            animation: rubberBand 1s;
+        }
+
+        @keyframes mymove {
+            0% {
+                bottom: 200px;
+                background-image: url('https://images.cnblogs.com/cnblogs_com/zc-lee/2003095/o_210721071151%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20210621132229.jpg');
+            }
+            25% {
+                bottom: 250px;
+                background-image: url('https://images.cnblogs.com/cnblogs_com/zc-lee/2003100/o_210721072000%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20200209130647.png');
+            }
+            50% {
+                bottom: 300px;
+                background-image: url('https://images.cnblogs.com/cnblogs_com/zc-lee/2003100/t_210721071934%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20200129135712.png');
+            }
+
+            75% {
+                bottom: 350px;
+                background-image: url('https://images.cnblogs.com/cnblogs_com/zc-lee/2003100/t_210721071941%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20200128164047.png');
+            }
+
+            100% {
+                bottom: 400px;
+                background-image: url('https://images.cnblogs.com/cnblogs_com/zc-lee/2003100/t_210721071911%E7%81%AB%E8%BD%A6.png');
+            }
+            
+        }
+
+        @keyframes rubberBand {
+            from {
+                transform: scale3d(1, 1, 1);
+            }
+
+            30% {
+                transform: scale3d(1.25, 0.75, 1);
+            }
+
+            40% {
+                transform: scale3d(0.75, 1.25, 1);
+            }
+
+            50% {
+                transform: scale3d(1.15, 0.85, 1);
+            }
+
+            65% {
+                transform: scale3d(.95, 1.05, 1);
+            }
+
+            75% {
+                transform: scale3d(1.05, .95, 1);
+            }
+
+            to {
+                transform: scale3d(1, 1, 1);
+            }
         }
     </style>
 </head>
 
 <body>
+    <div id="icon"></div>
     <img src="https://images.cnblogs.com/cnblogs_com/zc-lee/1901540/o_201216091158wugengji%20(1).jpg" alt="">
     <img src="https://images.cnblogs.com/cnblogs_com/zc-lee/1901644/o_2012161143007aec54e736d12f2e07615a764cc2d56285356844.jpg"
         alt="">

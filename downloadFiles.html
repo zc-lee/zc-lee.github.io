@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name='referrer' content='no-referrer'>
+    <title>downloadFiles</title>
+    <link rel="stylesheet" href="./lib/element-ui/element.css">
+
+</head>
+<style>
+    img {
+        width: 200px;
+        display: inline-block;
+    }
+
+    button {
+        display: inline-block;
+        margin: 20px;
+    }
+</style>
+
+<body>
+    <div id="vue-app">
+        <el-upload class="upload-demo" action="" :on-preview="handlePreview" :on-remove="handleRemove"
+            :file-list="fileList" list-type="picture" :before-upload="beforeUpload">
+            <el-button size="small" type="primary">点击上传</el-button>
+            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+        </el-upload>
+        <a href="https://images.cnblogs.com/cnblogs_com/zc-lee/2003095/o_210721071151%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20210621132229.jpg"
+            download>img</a>
+        <div>
+            <button onclick="downloadImg()">downloadImg</button>
+            <button onclick="downloadFileByBlob('./assets/pic.jpg')">jpg</button>
+            <button onclick="downloadFileByBlob('./assets/gif (1).gif')">gif</button>
+            <button onclick="downloadFileByBlob('./assets/山西航产电商订单对账单(1630658290611).pdf')">pdf</button>
+            <button onclick="downloadFileByBlob('./assets/word.docx')">docx</button>
+            <button onclick="downloadFileByBlob('./assets/xlsx.xlsx')">xlsx</button>
+            <button onclick="downloadFileByBlob('./assets/ppt.pptx')">pptx</button>
+        </div>
+        <img src="./assets/pic.jpg" />
+        <img crossorigin="Anonymous" src="./assets/pic.jpg" />
+        <img referrer="no-referrer" src="./assets/pic.jpg" />
+    </div>
+    <script src="./lib/polyfill.min.js"></script>
+    <!-- <script src="./lib/babel.min.js"></script> -->
+    <!-- <script src="https://unpkg.com/element-ui/lib/index.js"></script> -->
+    <script src="./lib/vue.js"></script>
+    <script src="./lib/element-ui/element.js"></script>
+    <script>
+        function downloadFileByBlob(url) {
+            function request(url) {
+                return new Promise(function (resolve, reject) {
+                    var xhr = new XMLHttpRequest()
+                    xhr.open('get', url, true)
+                    xhr.responseType = 'blob'
+                    xhr.onload = function () {
+                        console.log(this)
+                        if (this.status === 200) {
+                            var blob = this.response
+                            resolve(blob)
+                        }
+                    }
+                    xhr.onerror = function () {
+                        reject()
+                    }
+                    xhr.send()
+                })
+            }
+            request(url).then(function (blob) {
+                // ie10+
+                if (navigator.msSaveBlob) {
+                    var name = url.substr(url.lastIndexOf("/") + 1);
+                    return navigator.msSaveBlob(blob, name);
+                } else {
+                    var link = window.URL.createObjectURL(blob)
+                    var a = document.createElement('a');
+                    a.href = link;
+                    a.download = url;
+                    a.click();
+                }
+            });
+        }
+
+
+        function downloadImg() {
+            let url = '',
+                filename = 'filename.jpg'
+            url = './assets/pic.jpg'
+            // url = 'https://images.cnblogs.com/cnblogs_com/zc-lee/2003095/o_210721071151%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20210621132229.jpg'
+            // 非ie打开 无法直接下载
+            function downloadV8() {
+                var link = document.createElement('a')
+                link.setAttribute('download', filename)
+                link.href = url
+                document.body.appendChild(link)
+                link.click()
+                document.body.removeChild(link)
+            }
+            function getBlob() {
+                return new Promise(function (resolve, reject) {
+                    var xhr = new XMLHttpRequest()
+                    xhr.open('get', url, true)
+                    xhr.responseType = 'blob'
+                    xhr.onload = function () {
+                        if (this.status === 200) {
+                            var blob = this.response
+                            resolve(blob)
+                        }
+                    }
+                    xhr.onerror = function () {
+                        reject()
+                    }
+                    xhr.send()
+                })
+            }
+            function getURLBase64() {
+                return new Promise(function (resolve, reject) {
+                    var xhr = new XMLHttpRequest()
+                    xhr.open('get', url, true)
+                    xhr.responseType = 'blob'
+                    xhr.onload = function () {
+                        if (this.status === 200) {
+                            var blob = this.response
+                            var fileReader = new FileReader()
+                            fileReader.onloadend = function (e) {
+                                var result = e.target.result
+                                resolve(result)
+                            }
+                            fileReader.readAsDataURL(blob)
+                        }
+                    }
+                    xhr.onerror = function () {
+                        reject()
+                    }
+                    xhr.send()
+                })
+            }
+            // getURLBase64()
+            function downloadImgByBlob() {
+                var Img = new Image();
+                Img.onload = function () {
+                    var canvas = document.createElement("canvas");
+                    canvas.width = Img.width
+                    canvas.height = Img.height
+                    canvas.getContext("2d").drawImage(Img, 0, 0, canvas.width, canvas.height)
+                    dataUrl = canvas.toBlob(function (blob) {
+                        var blobUrl = window.URL.createObjectURL(blob)
+                        let a = document.createElement('a')
+                        a.href = blobUrl
+                        a.download = filename
+                        a.click()
+                    })
+                }
+                Img.setAttribute("crossOrigin", 'Anonymous')
+                // Img.setAttribute("referrer", 'no-referrer')
+                Img.src = url;
+            }
+            // downloadImgByBlob()
+            function getBase64(url, fileType, callback) {
+                var Img = new Image(),
+                    dataUrl = '';
+                Img.src = url;
+                Img.setAttribute("crossOrigin", 'Anonymous')
+                Img.onload = function () {
+                    var canvas = document.createElement("canvas"),
+                        width = Img.width,
+                        height = Img.height;
+                    canvas.width = width
+                    canvas.height = height
+                    canvas.getContext("2d").drawImage(Img, 0, 0, width, height)
+                    dataUrl = canvas.toDataURL('image/' + fileType)
+                    callback ? callback(dataUrl) : null
+                }
+            }
+
+            function imgToDataURL(url, filename, fileType) {
+                getBase64(url, fileType, function (_baseUrl) {
+                    var eleLink = document.createElement('a')
+                    eleLink.download = filename
+                    eleLink.style.display = 'none'
+                    eleLink.href = _baseUrl;
+                    document.body.appendChild(eleLink)
+                    eleLink.click();
+                    document.body.removeChild(eleLink)
+                })
+                // 下载文件错误
+                // getBlob().then(function (blob) {
+                //     var a = document.createElement('a');
+                //     var href = window.URL.createObjectURL(blob);
+                //     a.href = href;
+                //     a.download = filename;
+                //     a.click();
+                //     window.URL.revokeObjectURL(href);
+                // });
+            }
+            if (window.navigator.msSaveOrOpenBlob) {
+                // ie
+                getBlob().then(function (blob) {
+                    navigator.msSaveBlob(blob, decodeURIComponent(filename));
+                });
+            } else {
+                downloadImgByBlob()
+                // imgToDataURL(url, filename, 'image/jpeg')
+            }
+
+        }
+        new Vue({
+            el: '#vue-app',
+            name: 'vue-app',
+            data: function () {
+                return {
+                    fileList: [{ name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100' }, { name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100' }]
+                };
+            },
+            methods: {
+                handleRemove: function (file, fileList) {
+                    console.log(file, fileList);
+                },
+                handlePreview: function (file) {
+                    console.log(file);
+                },
+                beforeUpload: function (file) {
+                    console.log(file);
+                },
+            }
+        })
+    </script>
+</body>
+
+</html>
