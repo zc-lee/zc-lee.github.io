@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>分片上传、断点上传、并行下载</title>
+</head>
+
+<body>
+    <input type="file" name="file" id="file" onchange="chooseFile()">
+    <br />
+    <progress id="progress" max="100" value="0"></progress>
+    <br />
+    <button id="sliceUpload" onClick="sliceUpload()">分片上传</button>
+    <button id="PauseUpload" onClick="PauseUpload()">暂停上传</button>
+    <button id="BreakpointUpload" onClick="BreakpointUpload()">断点上传</button>
+    <button id="download" onClick="download()">分片合并下载</button>
+    <script type="text/javascript">
+        var bytesPerPiece = 1024 * 1024; // 每个文件切片大小定为1MB .
+        var totalPieces
+            , blob
+            , start = 0
+            , end = 0
+            , index = 0
+            , filesize
+            , filename
+            , progress = document.getElementById('progress')
+            , timer
+
+        function initParams() {
+            if (!blob) {
+                alert('请选择文件')
+                return false
+            }
+            start = 0;
+            end = 0;
+            index = 0;
+            filesize = blob.size;
+            filename = blob.name;
+            progress.max = filesize;
+            progress.value = end;
+
+            //计算文件切片总数
+            totalPieces = Math.ceil(filesize / bytesPerPiece);
+            console.log('totalPieces:', totalPieces)
+            return true
+        }
+        function chooseFile() {
+            blob = document.getElementById('file').files[0];
+            console.log(blob);
+            initParams()
+        }
+        function uploadChunk() {
+            end = start + bytesPerPiece;
+            if (end > filesize)
+                end = filesize;
+
+            var chunk = blob.slice(start, end);//切割文件    
+            var sliceIndex = blob.name + ' ' + index + ' - chunks ' + start + '-' + end;
+            var formData = new FormData();
+            formData.append("file", chunk, filename);
+            console.group('uploadChunk:', index)
+            console.log('start:', start)
+            console.log('end:', end)
+            console.log('chunk:', chunk)
+            console.log('sliceIndex:', sliceIndex)
+            console.log('formData:', formData)
+            console.groupEnd()
+            progress.value = end;
+            // $.ajax({
+            //     url: 'http://localhost:9999/test.php',
+            //     type: 'POST',
+            //     cache: false,
+            //     data: formData,
+            //     processData: false,
+            //     contentType: false,
+            // }).done(function(res){ 
+
+            // }).fail(function(res) {
+
+            // });
+            start = end;
+            index++;
+        }
+        function sliceUpload() {
+            if (!initParams())
+                return
+            // while (start < filesize) {
+            //     uploadChunk()
+            // }
+            BreakpointUpload()
+        }
+        function BreakpointUpload() {
+            if (!blob)
+                return alert('请选择文件')
+            else if (progress.value < progress.max)
+                timer = setInterval(function () {
+                    if (start < filesize)
+                        uploadChunk()
+                    else {
+                        PauseUpload()
+                        alert('上传完成')
+                    }
+                }, 500)
+        }
+        function download() {
+            if (!blob)
+                return alert('请选择文件')
+            var start = 0,
+                end = 0,
+                chunks = [],
+                blobs
+            while (start < filesize) {
+                end = start + bytesPerPiece;
+                if (end > filesize)
+                    end = filesize;
+                chunks.push(blob.slice(start, end))
+                start = end
+            }
+            console.log(chunks)
+            blobs = new Blob(chunks)
+            if (navigator.msSaveOrOpenBlob) {
+                // IE10+下载
+                navigator.msSaveOrBlob(blobs, filename);
+            } else {
+                // 非IE10+下载
+                let link = document.createElement('a');
+                link.href = URL.createObjectURL(blobs);
+                link.download = filename;
+                document.body.appendChild(link);
+                var evt = document.createEvent("MouseEvents");
+                evt.initEvent("click", false, false);
+                link.dispatchEvent(evt);//释放URL 对象
+                document.body.removeChild(link);
+            }
+        }
+        function PauseUpload() {
+            if (!timer)
+                alert('无上传文件')
+            clearInterval(timer)
+            timer = null
+        }
+
+    </script>
+</body>
+
+</html>

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name='referrer' content='no-referrer'>
-    <title>downloadFiles</title>
+    <title>downloadImg</title>
     <link rel="stylesheet" href="./lib/element-ui/element.css">
 
 </head>
@@ -33,6 +33,8 @@
         <div>
             <button onclick="downloadImg()">downloadImg</button>
             <button onclick="downloadFileByBlob('./assets/pic.jpg')">jpg</button>
+            <button
+                onclick="downloadFileByBlob('http://192.168.187.33:9977/attachment/download?attachmentId=b3bacbcd-471c-4df2-898c-d0e7cf1c8999')">下载报错</button>
             <button onclick="downloadFileByBlob('./assets/gif (1).gif')">gif</button>
             <button onclick="downloadFileByBlob('./assets/山西航产电商订单对账单(1630658290611).pdf')">pdf</button>
             <button onclick="downloadFileByBlob('./assets/word.docx')">docx</button>
@@ -56,14 +58,19 @@
                     xhr.open('get', url, true)
                     xhr.responseType = 'blob'
                     xhr.onload = function () {
-                        console.log(this)
+                        console.log(arguments)
                         if (this.status === 200) {
                             var blob = this.response
                             resolve(blob)
                         }
                     }
-                    xhr.onerror = function () {
-                        reject()
+                    xhr.onerror = function (err) { // !bug ie 不报错
+                        ELEMENT.Message({
+                            message: err.message || '下载错误',
+                            type: 'error',
+                            duration: 5 * 1000
+                        })
+                        reject(err)
                     }
                     xhr.send()
                 })

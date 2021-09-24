@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    body {
+        margin: 0;
+    }
+
+    ul li,
+    ol li {
+        border: 1px solid #00aaee;
+        width: 200px;
+        height: 20px;
+    }
+
+    .moveDom {
+        border: 1px solid #00aaee;
+        width: 50px;
+        height: 50px;
+        position: relative;
+    }
+
+    .active {
+        width: 300px;
+        height: 40px;
+        background-color: khaki;
+    }
+</style>
+
+<body>
+    <div>
+        <b>样式修改</b>
+        <button onclick="reflow('默认')">默认</button>
+        <button onclick="changeClass('切换类名')">切换类名</button>
+    </div>
+    <div>
+        <b>dom操作</b>
+        <button onclick="addDom('addDom')">addDom</button>
+        <button onclick="delDom('delDom')">delDom</button>
+        <button onclick="addDomHidden('addDomHidden')">addDomHidden</button>
+        <button onclick="delDomHidden('delDomHidden')">delDomHidden</button>
+        <button onclick="Fragment('Fragment')">Fragment</button>
+        <button onclick="replaceDom('replaceDom')">replaceDom</button>
+    </div>
+    <div>
+        <b>暂存引用</b>
+        <button onclick="moveDom('moveDom')">moveDom</button>
+        <button onclick="moveDomProxy('moveDomProxy')">moveDomProxy</button>
+    </div>
+    <div class="moveDom"></div>
+    <ul>
+        <li></li>
+        <li></li>
+    </ul>
+    <ol>
+    </ol>
+    <script src="./lib/polyfill.min.js"></script>
+    <script>
+        var divs = document.querySelectorAll('ul li');
+        var ul = document.querySelector('ul');
+        var ol = document.querySelector('ol');
+
+        function addOlDom(key) {
+            timeFunction(key, function () {
+                for (let i = 0; i < 5; i++) {
+                    ol.appendChild(document.createElement('li'))
+                }
+            })
+        }
+        addOlDom()
+
+
+        function timeFunction(key, callback) {
+            console.time(key)
+            callback()
+            console.timeEnd(key)
+        }
+        function reflow(key) {
+            timeFunction(key, function () {
+                // divs.forEach // ie undefined
+                var divs = document.querySelectorAll('ul li');
+                for (let i = 0; i < divs.length; i++) {
+                    var div = divs[i]
+                    div.style.width = div.style.width == '300px' ? '' : '300px';
+                    div.style.height = div.style.height == '30px' ? '' : '30px';
+                    // div.style.margin = div.style.margin == '20px' ? '10px' : '20px';
+                    div.style.background = div.style.background == 'red' ? '' : 'red';
+                }
+                // divs.forEach(function (div) {
+                //     // div.style.width = div.style.width == '300px' ? '200px' : '300px';
+                //     // div.style.height = div.style.height == '300px' ? '200px' : '300px';
+                //     // div.style.margin = div.style.margin == '20px' ? '10px' : '20px';
+                //     div.style.background = div.style.background == 'red' ? 'blue' : 'red';
+                // })
+            })
+        }
+        function changeClass(key) {
+            timeFunction(key, function () {
+                var divs = document.querySelectorAll('ul li');
+                for (let i = 0; i < divs.length; i++) {
+                    var div = divs[i]
+                    div.className = div.className == 'active' ? '' : 'active'
+                }
+            })
+        }
+        function addDom(key) {
+            timeFunction(key, function () {
+                var ul = document.querySelector('ul');
+                for (let i = 0; i < 2; i++) {
+                    ul.appendChild(document.createElement('li'))
+                }
+            })
+        }
+        function delDom(key) {
+            timeFunction(key, function () {
+                var divs = document.querySelectorAll('ul li');
+                var ul = document.querySelector('ul');
+                if (divs.length > 2) {
+                    for (let i = 0; i < divs.length; i++) {
+                        if (i < 2) {
+                            var div = divs[i]
+                            ul.removeChild(div);
+                        }
+                    }
+                } else {
+                    for (let i = 0; i < 2; i++) {
+                        ul.appendChild(document.createElement('li'))
+                    }
+                }
+            })
+        }
+        function addDomHidden(key) {
+            timeFunction(key, function () {
+                var ul = document.querySelector('ul');
+                ul.style.display = 'none';
+                for (let i = 0; i < 2; i++) {
+                    ul.appendChild(document.createElement('li'))
+                }
+                ul.style.display = 'block';
+            })
+        }
+        function delDomHidden(key) {
+            timeFunction(key, function () {
+                var ul = document.querySelector('ul');
+                ul.style.display = 'none';
+                var divs = document.querySelectorAll('ul li');
+                if (divs.length > 2) {
+                    for (let i = 0; i < divs.length; i++) {
+                        if (i < 2) {
+                            var div = divs[i]
+                            ul.removeChild(div);
+                        }
+                    }
+                } else {
+                    for (let i = 0; i < 2; i++) {
+                        ul.appendChild(document.createElement('li'))
+                    }
+                }
+                ul.style.display = 'block';
+            })
+        }
+        function Fragment(key) {
+            timeFunction(key, function () {
+                var ul = document.querySelector('ul');
+                var fragment = document.createDocumentFragment();
+                for (let i = 0; i < 2; i++) {
+                    fragment.appendChild(document.createElement('li'));
+                }
+                ul.appendChild(fragment);
+            })
+        }
+        function replaceDom(key) {
+            timeFunction(key, function () {
+                var ul = document.querySelector('ul');
+                var clone = ul.cloneNode(true);
+                for (let i = 0; i < 2; i++) {
+                    clone.appendChild(document.createElement('li'));
+                }
+                ul.parentNode.replaceChild(clone, ul);
+            })
+        }
+        function moveDom(key) {
+            timeFunction(key, function () {
+                var moveDom = document.querySelector('.moveDom')
+                var base = moveDom.offsetLeft > 100 ? -1 : 1
+                // var timer = setInterval(function () {
+                //     moveDom.style.left = base + moveDom.offsetLeft + 'px';
+                //     // console.log(base, moveDom.offsetLeft, moveDom.style.left, base + moveDom.offsetLeft)
+                //     if (moveDom.offsetLeft > 99 || moveDom.offsetLeft < 1) {
+                //         clearInterval(timer)
+                //         timer = null
+                //     }
+                // }, 100)
+                for (let i = 0; i < 100; i++) {
+                    moveDom.style.left = base + moveDom.offsetLeft + 'px';
+                    moveDom.style.top = base + moveDom.offsetLeft + 'px';
+                    // console.log(current,moveDom.offsetLeft)
+                    // console.log(base, moveDom.offsetLeft, moveDom.style.left, base + moveDom.offsetLeft)
+                }
+            })
+        }
+        function moveDomProxy(key) {
+            timeFunction(key, function () {
+                var moveDom = document.querySelector('.moveDom')
+                var base = moveDom.offsetLeft > 100 ? -1 : 1
+                // var timer = setInterval(function () {
+                //     moveDom.style.left = base + moveDom.offsetLeft + 'px';
+                //     // console.log(base, moveDom.offsetLeft, moveDom.style.left, base + moveDom.offsetLeft)
+                //     if (moveDom.offsetLeft > 99 || moveDom.offsetLeft < 1) {
+                //         clearInterval(timer)
+                //         timer = null
+                //     }
+                // }, 100)
+                for (let i = 0; i < 100; i++) {
+                    var current = moveDom.offsetLeft
+                    moveDom.style.left = base + current + 'px';
+                    moveDom.style.top = base + current + 'px';
+                    // console.log(base, moveDom.offsetLeft, moveDom.style.left, base + moveDom.offsetLeft)
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>
