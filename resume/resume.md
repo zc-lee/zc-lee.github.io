@@ -2,7 +2,7 @@
 <img align="right" src="https://www.showdoc.com.cn/server/api/attachment/visitfile/sign/f1ba86e7d7c251a248e0f76f012e7abd?showdoc=.jpg" width="130px"/>
 <br />
 
-* 姓名：[李志超](https://gitee.com/zc-lee/zc-lee/raw/service/resume.pdf) 
+* 姓名：[李志超](https://gitee.com/zc-lee/zc-lee/raw/service/resume/resume.pdf) 
 * 年龄: 27 
 * 籍贯：山西 
 * 职位：前端工程师 
