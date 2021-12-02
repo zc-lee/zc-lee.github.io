@@ -1,0 +1,2 @@
+(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["chunk-2d2105d3"],{b829:function(o,n,e){"use strict";e.r(n);e("fb6a"),e("ac1f"),e("841c");var c,a,t={name:"AuthRedirect",created:function(){var o=window.location.search.slice(1);console.log(window.localStorage),window.localStorage&&(window.localStorage.setItem("x-admin-oauth-code",o),window.close())},render:function(o){return o()}},l=t,w=e("2877"),d=Object(w["a"])(l,c,a,!1,null,null,null);n["default"]=d.exports}}]);
+//# sourceMappingURL=chunk-2d2105d3.f547ecd5.js.map
